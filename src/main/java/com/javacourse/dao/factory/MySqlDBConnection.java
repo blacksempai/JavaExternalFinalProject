@@ -1,0 +1,18 @@
+package com.javacourse.dao.factory;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+
+public class MySqlDBConnection {
+
+    public static Connection getConnection(){
+        Connection connection = null;
+        try {
+            connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/taxes","root","root");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return connection;
+    }
+}
