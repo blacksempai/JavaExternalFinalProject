@@ -11,6 +11,7 @@ git clone https://github.com/blacksempai/JavaExternalFinalProject.git
 # Инструкция по запуску приложения
 
 1)Install database from [db.sql](database/db.sql)
+
 2)Build and deploy the project with maven:
 ```
 mvn tomcat7:deploy
