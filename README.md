@@ -16,4 +16,4 @@ git clone https://github.com/blacksempai/JavaExternalFinalProject.git
 ```
 mvn tomcat7:deploy
 ```
-4)Go to url localhost:8888/
+3)Go to url localhost:8888/
