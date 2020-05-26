@@ -1,7 +1,7 @@
 package com.javacourse.controller.admin;
 
 import com.javacourse.annotations.Controller;
-import com.javacourse.controller.utils.ControllerCommand;
+import com.javacourse.controller.ControllerCommand;
 import com.javacourse.dao.InspectorDAO;
 import com.javacourse.dao.UserDAO;
 import com.javacourse.dao.factory.DAOFactory;
@@ -18,14 +18,14 @@ import java.util.regex.Pattern;
 
 @Controller(url = "/admin/add", method = "POST")
 public class InspectorAddController implements ControllerCommand {
-    InspectorDAO inspectorDAO;
-    UserDAO userDAO;
-    Page adminPanel;
+    private AdminPanelController adminPanel;
+    private InspectorDAO inspectorDAO;
+    private UserDAO userDAO;
 
     public InspectorAddController(DAOFactory factory) {
         inspectorDAO = factory.createInspectorDAO();
         userDAO = factory.createUserDAO();
-        adminPanel = new Page(PagePath.getProperty("page.admin"),Page.DispatchType.FORWARD);
+        adminPanel = new AdminPanelController(factory);
     }
 
     @Override
@@ -33,9 +33,9 @@ public class InspectorAddController implements ControllerCommand {
         request.setAttribute("inspectors",inspectorDAO.getAllInspectors());
         if (isValid(request)) {
             Inspector inspector = buildInspector(request);
-            inspectorDAO.addNewInspector(inspector);
+            inspectorDAO.create(inspector);
         }
-        return adminPanel;
+        return adminPanel.execute(request,response);
     }
 
     private Inspector buildInspector(HttpServletRequest request){
@@ -55,23 +55,23 @@ public class InspectorAddController implements ControllerCommand {
 
     private boolean isValid(HttpServletRequest request){
         if(request.getParameter("login")==null||(request.getParameter("password")==null||request.getParameter("email")==null)){
-            request.setAttribute("message", Messages.getProperty("msg.fields-error"));
+            request.setAttribute("message", Messages.getProperty("msg.fields-error",request));
             return false;
         }
         if (!loginIsValid(request.getParameter("login"))){
-            request.setAttribute("message",Messages.getProperty("msg.login-error"));
+            request.setAttribute("message",Messages.getProperty("msg.login-error",request));
             return false;
         }
         if (!passwordIsValid(request.getParameter("password"))){
-            request.setAttribute("message",Messages.getProperty("msg.pass-error"));
+            request.setAttribute("message",Messages.getProperty("msg.pass-error",request));
             return false;
         }
         if (!emailIsValid(request.getParameter("email"))){
-            request.setAttribute("message",Messages.getProperty("msg.mail-error"));
+            request.setAttribute("message",Messages.getProperty("msg.mail-error",request));
             return false;
         }
         if (!loginIsUnique(request.getParameter("login"))){
-            request.setAttribute("message",Messages.getProperty("msg.login-exists"));
+            request.setAttribute("message",Messages.getProperty("msg.login-exists",request));
             return false;
         }
         return true;

@@ -1,7 +1,7 @@
 package com.javacourse.controller.auth;
 
 import com.javacourse.annotations.Controller;
-import com.javacourse.controller.utils.ControllerCommand;
+import com.javacourse.controller.ControllerCommand;
 import com.javacourse.dao.AdminDAO;
 import com.javacourse.dao.InspectorDAO;
 import com.javacourse.dao.UserDAO;
@@ -38,33 +38,33 @@ public class SignInControllerPOST implements ControllerCommand {
         String login = request.getParameter("login");
         String password = request.getParameter("password");
         if (userDAO.isExists(login)){
-            User user = userDAO.getUserByLogin(login);
+            User user = userDAO.getByLogin(login);
             byte[] salt = PasswordHashing.stringToByte(user.getSalt());
             String passHash = PasswordHashing.getSaltedPasswordHash(password,salt);
             if (user.getPasswordHash().equals(passHash)){
-                request.getSession().setAttribute("user",user);
+                request.getSession().setAttribute("user", user);
                 return homePage;
             }
         }
         if (inspectorDAO.isExists(login)){
-            Inspector inspector = inspectorDAO.getInspectorByLogin(login);
+            Inspector inspector = inspectorDAO.getByLogin(login);
             byte[] salt = PasswordHashing.stringToByte(inspector.getSalt());
             String passHash = PasswordHashing.getSaltedPasswordHash(password,salt);
             if (inspector.getPasswordHash().equals(passHash)){
-                request.getSession().setAttribute("inspector",inspector);
+                request.getSession().setAttribute("inspector", inspector);
                 return homePage;
             }
         }
         if (adminDAO.isExists(login)){
-            Admin admin = adminDAO.getAdminByLogin(login);
+            Admin admin = adminDAO.getByLogin(login);
             byte[] salt = PasswordHashing.stringToByte(admin.getSalt());
             String passHash = PasswordHashing.getSaltedPasswordHash(password,salt);
             if (admin.getPasswordHash().equals(passHash)){
-                request.getSession().setAttribute("admin",admin);
+                request.getSession().setAttribute("admin", admin);
                 return homePage;
             }
         }
-        request.setAttribute("message", Messages.getProperty("msg.sign-in-error"));
+        request.setAttribute("message", Messages.getProperty("msg.sign-in-error", request));
         return signInPage;
     }
 }

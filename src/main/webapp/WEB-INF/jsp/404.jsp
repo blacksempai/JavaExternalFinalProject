@@ -9,9 +9,10 @@
         <div class="header">
             <jsp:include page="/WEB-INF/jsp/shared/header.jsp"/>
         </div>
-        <div class="error">
-            ERROR 404
-                <img src="/graphics/trueno.gif">
+        <div id="er" class="error">
+            ERROR 404 <br>
+            PAGE NOT FOUND <br>
+            <img src="/graphics/trueno.gif" onclick="document.getElementById('er').className='error-alternative'">
         </div>
     </body>
 </html>

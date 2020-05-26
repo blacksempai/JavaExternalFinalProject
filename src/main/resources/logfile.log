@@ -38,7 +38,7 @@ java.lang.NullPointerException
 2020-05-12 19:50:25 ERROR AdminFilter:32 - Unauthorized entry to admin panel from ip:0:0:0:0:0:0:0:1
 2020-05-12 19:51:19 ERROR DispatcherServlet:48 - User tried to reach address:/user/lol
 com.javacourse.exceptions.ControllerNotFound
-	at com.javacourse.controller.utils.ControllerMappingHandler.getController(ControllerMappingHandler.java:85)
+	at com.javacourse.controller.ControllerMappingHandler.getController(ControllerMappingHandler.java:85)
 	at com.javacourse.web.DispatcherServlet.dispatchToRequestedPage(DispatcherServlet.java:38)
 	at com.javacourse.web.DispatcherServlet.doGet(DispatcherServlet.java:24)
 	at javax.servlet.http.HttpServlet.service(HttpServlet.java:621)
@@ -68,7 +68,7 @@ com.javacourse.exceptions.ControllerNotFound
 2020-05-12 19:51:19 ERROR DispatcherServlet:49 - class com.javacourse.exceptions.ControllerNotFound
 2020-05-12 19:57:05 ERROR DispatcherServlet:48 - User tried to reach address:/user/lol
 com.javacourse.exceptions.ControllerNotFound
-	at com.javacourse.controller.utils.ControllerMappingHandler.getController(ControllerMappingHandler.java:85)
+	at com.javacourse.controller.ControllerMappingHandler.getController(ControllerMappingHandler.java:85)
 	at com.javacourse.web.DispatcherServlet.dispatchToRequestedPage(DispatcherServlet.java:38)
 	at com.javacourse.web.DispatcherServlet.doGet(DispatcherServlet.java:24)
 	at javax.servlet.http.HttpServlet.service(HttpServlet.java:621)

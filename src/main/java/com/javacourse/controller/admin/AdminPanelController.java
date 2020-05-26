@@ -1,7 +1,7 @@
 package com.javacourse.controller.admin;
 
 import com.javacourse.annotations.Controller;
-import com.javacourse.controller.utils.ControllerCommand;
+import com.javacourse.controller.ControllerCommand;
 import com.javacourse.dao.InspectorDAO;
 import com.javacourse.dao.factory.DAOFactory;
 import com.javacourse.view.Page;

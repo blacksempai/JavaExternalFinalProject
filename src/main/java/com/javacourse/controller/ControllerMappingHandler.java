@@ -1,8 +1,7 @@
-package com.javacourse.controller.utils;
+package com.javacourse.controller;
 
 import com.javacourse.annotations.Controller;
 import com.javacourse.controller.admin.AdminPanelController;
-import com.javacourse.controller.admin.ControllerRegisterer;
 import com.javacourse.controller.admin.InspectorAddController;
 import com.javacourse.controller.admin.InspectorChangeController;
 import com.javacourse.controller.auth.*;
@@ -27,7 +26,6 @@ public class ControllerMappingHandler {
     private ControllerMappingHandler(){
         factory = new MySqlDAOFactory();
         controllers = new LinkedList<>();
-        controllers.add(new ControllerRegisterer());
         controllers.add(new SignUpControllerPOST(factory));
         controllers.add(new SignUpControllerGET());
         controllers.add(new SignInControllerPOST(factory));

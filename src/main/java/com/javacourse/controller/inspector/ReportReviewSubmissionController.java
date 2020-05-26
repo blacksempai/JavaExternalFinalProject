@@ -1,12 +1,12 @@
 package com.javacourse.controller.inspector;
 
 import com.javacourse.annotations.Controller;
-import com.javacourse.controller.utils.ControllerCommand;
+import com.javacourse.controller.ControllerCommand;
 import com.javacourse.dao.InspectorDAO;
 import com.javacourse.dao.ReportDAO;
 import com.javacourse.dao.factory.DAOFactory;
 import com.javacourse.model.entities.Inspector;
-import com.javacourse.model.entities.TaxReport;
+import com.javacourse.model.entities.report.Report;
 import com.javacourse.view.Page;
 import com.javacourse.view.PagePath;
 
@@ -29,8 +29,8 @@ public class ReportReviewSubmissionController implements ControllerCommand {
     public Page execute(HttpServletRequest request, HttpServletResponse response) {
         Inspector inspector = (Inspector) request.getSession().getAttribute("inspector");
         Integer reportId = Integer.parseInt(request.getParameter("id"));
-        List<TaxReport> reports = reportDAO.getReportsByInspector(inspector);
-        for (TaxReport report : reports) {
+        List<Report> reports = reportDAO.getReportsByInspector(inspector);
+        for (Report report : reports) {
             if (report.getId().equals(reportId)){
                 updateReport(request,report);
                 updateInspector(inspector);
@@ -39,21 +39,21 @@ public class ReportReviewSubmissionController implements ControllerCommand {
         return new Page(PagePath.getProperty("page.inspector-reports"),Page.DispatchType.FORWARD);
     }
 
-    private void updateReport(HttpServletRequest request, TaxReport report){
+    private void updateReport(HttpServletRequest request, Report report){
         if(request.getParameter("status").equals("true")) {
-            report.setStatus(TaxReport.Status.ACCEPTED);
+            report.setStatus(Report.Status.ACCEPTED);
         }
         if (request.getParameter("status").equals("false")){
-            report.setStatus(TaxReport.Status.DECLINED);
+            report.setStatus(Report.Status.DECLINED);
             String reviewText = request.getParameter("review_text");
             report.setReview(reviewText);
         }
-        reportDAO.updateReport(report);
+        reportDAO.update(report);
     }
 
     private void updateInspector(Inspector inspector){
         inspector.setReportsInService(inspector.getReportsInService()-1);
-        inspectorDAO.updateInspector(inspector);
+        inspectorDAO.update(inspector);
     }
 
 }

@@ -1,4 +1,4 @@
-package com.javacourse.controller.utils;
+package com.javacourse.controller;
 
 import com.javacourse.view.Page;
 

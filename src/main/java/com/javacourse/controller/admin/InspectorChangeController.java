@@ -1,7 +1,7 @@
 package com.javacourse.controller.admin;
 
 import com.javacourse.annotations.Controller;
-import com.javacourse.controller.utils.ControllerCommand;
+import com.javacourse.controller.ControllerCommand;
 import com.javacourse.dao.InspectorDAO;
 import com.javacourse.dao.factory.DAOFactory;
 import com.javacourse.model.entities.Inspector;
@@ -17,12 +17,12 @@ import java.util.regex.Pattern;
 
 @Controller(url = "/admin/change", method = "POST")
 public class InspectorChangeController implements ControllerCommand {
+    private AdminPanelController adminPanel;
     private InspectorDAO inspectorDAO;
-    private Page adminPanel;
 
     public InspectorChangeController(DAOFactory factory) {
         inspectorDAO = factory.createInspectorDAO();
-        adminPanel = new Page(PagePath.getProperty("page.admin"),Page.DispatchType.FORWARD);
+        AdminPanelController adminPanel = new AdminPanelController(factory);;
     }
 
     @Override
@@ -30,9 +30,9 @@ public class InspectorChangeController implements ControllerCommand {
         request.setAttribute("inspectors",inspectorDAO.getAllInspectors());
         if (isValid(request)) {
             Inspector inspector = buildInspector(request);
-            inspectorDAO.updateInspector(inspector);
+            inspectorDAO.update(inspector);
         }
-        return adminPanel;
+        return adminPanel.execute(request,response);
     }
 
     private Inspector buildInspector(HttpServletRequest request){
@@ -52,19 +52,19 @@ public class InspectorChangeController implements ControllerCommand {
 
     private boolean isValid(HttpServletRequest request){
         if(request.getParameter("login")==null||(request.getParameter("password")==null||request.getParameter("email")==null)){
-            request.setAttribute("message", Messages.getProperty("msg.fields-error"));
+            request.setAttribute("message", Messages.getProperty("msg.fields-error",request));
             return false;
         }
         if (!loginIsValid(request.getParameter("login"))){
-            request.setAttribute("message",Messages.getProperty("msg.login-error"));
+            request.setAttribute("message",Messages.getProperty("msg.login-error",request));
             return false;
         }
         if (!passwordIsValid(request.getParameter("password"))){
-            request.setAttribute("message",Messages.getProperty("msg.pass-error"));
+            request.setAttribute("message",Messages.getProperty("msg.pass-error",request));
             return false;
         }
         if (!emailIsValid(request.getParameter("email"))){
-            request.setAttribute("message",Messages.getProperty("msg.mail-error"));
+            request.setAttribute("message",Messages.getProperty("msg.mail-error",request));
             return false;
         }
         return true;

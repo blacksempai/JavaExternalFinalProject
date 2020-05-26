@@ -1,23 +1,24 @@
 package com.javacourse.web;
 
 import com.javacourse.model.entities.TaxReport;
-import com.javacourse.model.TaxReportTag;
+import com.javacourse.controller.utils.ReportTag;
 
 import javax.servlet.http.HttpServletRequest;
 
+@Deprecated
 public class PostReportParser {
     private TaxReport taxReport;
 
     public TaxReport parseRequest(HttpServletRequest httpServletRequest) throws NumberFormatException, NullPointerException{
         taxReport = new TaxReport();
-        for (TaxReportTag tag : TaxReportTag.values()){
+        for (ReportTag tag : ReportTag.values()){
             String param =  httpServletRequest.getParameter(tag.getTag());
             setTaxReportValue(tag, param);
         }
         return taxReport;
     }
 
-    private void setTaxReportValue(TaxReportTag tag, String param) throws NumberFormatException, NullPointerException{
+    private void setTaxReportValue(ReportTag tag, String param) throws NumberFormatException, NullPointerException{
         switch (tag){
             case TYPE:taxReport.setType(getType(param));
             break;
@@ -31,15 +32,9 @@ public class PostReportParser {
             break;
             case FINE_PERCENT:taxReport.setFinePercent(Short.parseShort(param));
             break;
-            case USER_ADDRESS:taxReport.setUserAddress(param);
-            break;
-            case USER_PASSPORT:taxReport.setUserPassportInfo(param);
-            break;
             case AUTHORITY_NAME:taxReport.setAuthorityName(param);
             break;
             case SPECIFIED_YEAR:taxReport.setSpecifiedYear(Short.parseShort(param));
-            break;
-            case USER_FULL_NAME:taxReport.setUserFullName(param);
             break;
             case EMPLOYEES_AMOUNT:taxReport.setEmployeesNumber(Integer.parseInt(param));
             break;

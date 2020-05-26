@@ -1,20 +1,20 @@
 package com.javacourse.dao;
 
 import com.javacourse.model.entities.Inspector;
-import com.javacourse.model.entities.TaxReport;
 import com.javacourse.model.entities.User;
+import com.javacourse.model.entities.report.Report;
 
 import java.util.List;
 
 public interface ReportDAO {
 
-    void addReport(TaxReport report);
+    void create(Report report);
 
-    void updateReport(TaxReport report);
+    void update(Report report);
 
-    void deleteReport(TaxReport report);
+    void delete(Report report);
 
-    List<TaxReport> getReportsByUser(User user);
+    List<Report> getReportsByUser(User user);
 
-    List<TaxReport> getReportsByInspector(Inspector inspector);
+    List<Report> getReportsByInspector(Inspector inspector);
 }

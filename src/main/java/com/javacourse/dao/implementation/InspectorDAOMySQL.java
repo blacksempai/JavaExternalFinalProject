@@ -2,12 +2,11 @@ package com.javacourse.dao.implementation;
 
 import com.javacourse.dao.factory.MySqlDBConnection;
 import com.javacourse.dao.InspectorDAO;
+import com.javacourse.model.entities.Account;
 import com.javacourse.model.entities.Inspector;
 import org.apache.log4j.Logger;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,31 +14,44 @@ public class InspectorDAOMySQL implements InspectorDAO {
     private static Logger logger = Logger.getLogger(InspectorDAOMySQL.class);
 
     @Override
-    public void addNewInspector(Inspector inspector) {
-        Connection connection = MySqlDBConnection.getConnection();
-        String sql ="INSERT INTO inspectors VALUE(NULL,?,?,?,?,?,?,?);";
-        try (connection) {
+    public void create(Inspector inspector) {
+        String sql ="INSERT INTO inspector(inspector_id,full_name,complaint_number,reports_in_service) VALUES(?,?,?,?);";
+        try (Connection connection = MySqlDBConnection.getConnection()) {
+            connection.setAutoCommit(false);
             PreparedStatement statement = connection.prepareStatement(sql);
-            statement.setString(1,inspector.getLogin());
-            statement.setString(2,inspector.getPasswordHash());
-            statement.setString(3,inspector.getEmail());
-            statement.setString(4,inspector.getFullName());
-            statement.setInt(5,inspector.getComplaintNumber());
-            statement.setInt(6,inspector.getReportsInService());
-            statement.setString(7,inspector.getSalt());
+            int id = createAccountAndGetId(connection, inspector);
+            statement.setInt(1,id);
+            statement.setString(2,inspector.getFullName());
+            statement.setInt(3,inspector.getComplaintNumber());
+            statement.setInt(4,inspector.getReportsInService());
             statement.execute();
+            connection.commit();
         } catch (SQLException e) {
             logger.error(e.getMessage());
             e.printStackTrace();
         }
     }
 
+    private int createAccountAndGetId(Connection connection, Account account) throws SQLException {
+        String sql ="INSERT INTO account(login,password_hash,salt,email) VALUES(?,?,?,?);";
+        PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+        statement.setString(1,account.getLogin());
+        statement.setString(2,account.getPasswordHash());
+        statement.setString(3,account.getSalt());
+        statement.setString(4,account.getEmail());
+        statement.execute();
+        ResultSet rs = statement.getGeneratedKeys();
+        if(rs.next())
+            return rs.getInt(1);
+        else
+            throw new SQLException("Error getting generated key");
+    }
+
     @Override
     public List<Inspector> getAllInspectors() {
-        Connection connection = MySqlDBConnection.getConnection();
-        String sql ="SELECT * FROM inspectors;";
+        String sql ="SELECT * FROM inspector I JOIN account A ON (I.inspector_id = A.account_id);";
         List<Inspector> inspectors = new ArrayList<>();
-        try (connection) {
+        try (Connection connection = MySqlDBConnection.getConnection()) {
             PreparedStatement statement = connection.prepareStatement(sql);
             ResultSet rs = statement.executeQuery();
             while (rs.next()){
@@ -62,13 +74,13 @@ public class InspectorDAOMySQL implements InspectorDAO {
     }
 
     @Override
-    public Inspector getInspectorByLogin(String login) {
-        Connection connection = MySqlDBConnection.getConnection();
-        String sql ="SELECT * FROM inspectors WHERE login='"+login+"';";
+    public Inspector getByLogin(String login) {
+        String sql ="SELECT * FROM inspector I JOIN account A ON (I.inspector_id = A.account_id) WHERE login=?;";
         Inspector inspector = new Inspector();
         inspector.setLogin(login);
-        try (connection) {
+        try (Connection connection = MySqlDBConnection.getConnection()) {
             PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setString(1, login);
             ResultSet rs = statement.executeQuery();
             while (rs.next()){
                 inspector.setId(rs.getInt("inspector_id"));
@@ -87,13 +99,13 @@ public class InspectorDAOMySQL implements InspectorDAO {
     }
 
     @Override
-    public Inspector getInspectorById(Integer id) {
-        Connection connection = MySqlDBConnection.getConnection();
-        String sql ="SELECT * FROM inspectors WHERE inspector_id='"+id+"';";
+    public Inspector getById(int id) {
+        String sql ="SELECT * FROM inspector I JOIN account A ON (I.inspector_id = A.account_id) WHERE inspector_id=?;";
         Inspector inspector = new Inspector();
         inspector.setId(id);
-        try (connection) {
+        try (Connection connection = MySqlDBConnection.getConnection()) {
             PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setInt(1, id);
             ResultSet rs = statement.executeQuery();
             while (rs.next()){
                 inspector.setLogin(rs.getString("login"));
@@ -112,17 +124,19 @@ public class InspectorDAOMySQL implements InspectorDAO {
     }
 
     @Override
-    public void updateInspector(Inspector inspector) {
-        Connection connection = MySqlDBConnection.getConnection();
-        String sql = "UPDATE inspectors SET password_hash=?, email=?, full_name=?, complaint_number=?, reports_in_service=?, salt=? WHERE login='"+inspector.getLogin()+"';";
-        try (connection) {
+    public void update(Inspector inspector) {
+        String sql = "UPDATE inspector I JOIN account A ON (I.inspector_id = A.account_id)" +
+                " SET password_hash=?, email=?, full_name=?, complaint_number=?, reports_in_service=?, salt=? WHERE login=?;";
+        try (Connection connection = MySqlDBConnection.getConnection()) {
             PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setString(1, inspector.getLogin());
             statement.setString(1,inspector.getPasswordHash());
             statement.setString(2,inspector.getEmail());
             statement.setString(3,inspector.getFullName());
             statement.setInt(4,inspector.getComplaintNumber());
             statement.setInt(5,inspector.getReportsInService());
             statement.setString(6,inspector.getSalt());
+            statement.setString(7,inspector.getLogin());
             statement.execute();
         } catch (SQLException e) {
             logger.error(e.getMessage());
@@ -132,10 +146,10 @@ public class InspectorDAOMySQL implements InspectorDAO {
 
     @Override
     public boolean isExists(String login) {
-        Connection connection = MySqlDBConnection.getConnection();
-        String sql ="SELECT * FROM inspectors WHERE login='"+login+"';";
-        try (connection) {
+        String sql ="SELECT * FROM inspector I JOIN account A ON (I.inspector_id = A.account_id) WHERE login=?;";
+        try (Connection connection = MySqlDBConnection.getConnection()) {
             PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setString(1, login);
             ResultSet rs = statement.executeQuery();
             if (rs.next()){
                 connection.close();
@@ -150,10 +164,10 @@ public class InspectorDAOMySQL implements InspectorDAO {
 
     @Override
     public Inspector getInspectorWithLessReportsInService() {
-        Connection connection = MySqlDBConnection.getConnection();
-        String sql ="SELECT * FROM inspectors WHERE reports_in_service = (SELECT MIN(reports_in_service) FROM inspectors);";
+        String sql ="SELECT * FROM inspector I JOIN account A ON (I.inspector_id = A.account_id)" +
+                " WHERE reports_in_service = (SELECT MIN(reports_in_service) FROM inspector);";
         Inspector inspector = new Inspector();
-        try (connection) {
+        try (Connection connection = MySqlDBConnection.getConnection()) {
             PreparedStatement statement = connection.prepareStatement(sql);
             ResultSet rs = statement.executeQuery();
             if(rs.next()){

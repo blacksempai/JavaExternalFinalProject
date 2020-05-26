@@ -1,7 +1,7 @@
 package com.javacourse.controller.auth;
 
 import com.javacourse.annotations.Controller;
-import com.javacourse.controller.utils.ControllerCommand;
+import com.javacourse.controller.ControllerCommand;
 import com.javacourse.view.Page;
 import com.javacourse.view.PagePath;
 

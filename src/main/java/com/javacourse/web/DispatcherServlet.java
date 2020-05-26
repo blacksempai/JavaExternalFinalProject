@@ -1,7 +1,7 @@
 package com.javacourse.web;
 
-import com.javacourse.controller.utils.ControllerCommand;
-import com.javacourse.controller.utils.ControllerMappingHandler;
+import com.javacourse.controller.ControllerCommand;
+import com.javacourse.controller.ControllerMappingHandler;
 import com.javacourse.view.Page;
 import com.javacourse.view.PagePath;
 import org.apache.log4j.Logger;

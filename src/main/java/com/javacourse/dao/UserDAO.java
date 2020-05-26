@@ -1,17 +1,18 @@
 package com.javacourse.dao;
 
 
+import com.javacourse.model.entities.Account;
 import com.javacourse.model.entities.User;
 
 public interface UserDAO {
 
-    void addNewUser(User user);
+    void create(User user);
 
-    User getUserByLogin(String login);
+    User getByLogin(String login);
 
-    User getUserById(Integer id);
+    User getById(int id);
 
-    void updateUser(User user);
+    void update(User user);
 
     boolean isExists(String login);
 

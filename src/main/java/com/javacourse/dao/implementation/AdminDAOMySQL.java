@@ -14,17 +14,18 @@ public class AdminDAOMySQL implements AdminDAO {
     private static Logger logger = Logger.getLogger(AdminDAOMySQL.class);
 
     @Override
-    public Admin getAdminByLogin(String login) {
-        Connection connection = MySqlDBConnection.getConnection();
-        String sql ="SELECT * FROM admin WHERE login='"+login+"';";
+    public Admin getByLogin(String login) {
+        String sql ="SELECT * FROM admin Ad JOIN account Ac ON (Ad.admin_id = Ac.account_id) WHERE login=?;";
         Admin admin = new Admin();
         admin.setLogin(login);
-        try (connection) {
+        try (Connection connection = MySqlDBConnection.getConnection()) {
             PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setString(1,login);
             ResultSet rs = statement.executeQuery();
             while (rs.next()){
                 admin.setId(rs.getInt("admin_id"));
                 admin.setPasswordHash(rs.getString("password_hash"));
+                admin.setEmail(rs.getString("email"));
                 admin.setSalt(rs.getString("salt"));
             }
         } catch (SQLException e) {
@@ -36,10 +37,10 @@ public class AdminDAOMySQL implements AdminDAO {
 
     @Override
     public boolean isExists(String login) {
-        Connection connection = MySqlDBConnection.getConnection();
-        String sql ="SELECT * FROM admin WHERE login='"+login+"';";
-        try (connection) {
+        String sql ="SELECT * FROM admin Ad JOIN account Ac ON (Ad.admin_id = Ac.account_id) WHERE login=?;";
+        try (Connection connection = MySqlDBConnection.getConnection()) {
             PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setString(1,login);
             ResultSet rs = statement.executeQuery();
             if (rs.next()){
                 connection.close();

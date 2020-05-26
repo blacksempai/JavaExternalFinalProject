@@ -2,68 +2,60 @@ package com.javacourse.dao.implementation;
 
 import com.javacourse.dao.factory.MySqlDBConnection;
 import com.javacourse.dao.UserDAO;
+import com.javacourse.model.TaxGroup;
+import com.javacourse.model.entities.Account;
 import com.javacourse.model.entities.User;
 import org.apache.log4j.Logger;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 
 public class UserDAOMySQL implements UserDAO {
     private static Logger logger = Logger.getLogger(UserDAOMySQL.class);
 
     @Override
-    public void addNewUser(User user) {
-        Connection connection = MySqlDBConnection.getConnection();
-        String sql ="INSERT INTO users VALUE(NULL,?,?,?,?,?,?);";
-        try (connection) {
+    public void create(User user) {
+        String sql ="INSERT INTO user(user_id,full_name,company_name,passport,address,tax_group) VALUES(?,?,?,?,?,?);";
+        try (Connection connection = MySqlDBConnection.getConnection()) {
+            connection.setAutoCommit(false);
             PreparedStatement statement = connection.prepareStatement(sql);
-            statement.setString(1,user.getLogin());
-            statement.setString(2,user.getPasswordHash());
-            statement.setString(3,user.getEmail());
-            statement.setString(4,user.getFullName());
-            statement.setString(5,user.getCompany());
-            statement.setString(6,user.getSalt());
+            int id = createAccountAndGetId(connection, user);
+            statement.setInt(1, id);
+            statement.setString(2,user.getFullName());
+            statement.setString(3,user.getCompany());
+            statement.setString(4,user.getPassport());
+            statement.setString(5,user.getAddress());
+            statement.setString(6,user.getGroup().name());
             statement.execute();
+            connection.commit();
         } catch (SQLException e) {
             logger.error(e.getMessage());
             e.printStackTrace();
         }
     }
 
-    @Override
-    public User getUserByLogin(String login) {
-        Connection connection = MySqlDBConnection.getConnection();
-        String sql ="SELECT * FROM users WHERE login='"+login+"';";
-        User user = new User();
-        user.setLogin(login);
-        try(connection) {
-            PreparedStatement statement = connection.prepareStatement(sql);
-            ResultSet rs = statement.executeQuery();
-            while (rs.next()){
-                user.setId(rs.getInt("user_id"));
-                user.setPasswordHash(rs.getString("password_hash"));
-                user.setSalt(rs.getString("salt"));
-                user.setEmail(rs.getString("email"));
-                user.setFullName(rs.getString("full_name"));
-                user.setCompany(rs.getString("company_name"));
-            }
-        } catch (SQLException e) {
-            logger.error(e.getMessage());
-            e.printStackTrace();
-        }
-        return user;
+    private int createAccountAndGetId(Connection connection, Account account) throws SQLException {
+        String sql ="INSERT INTO account(login,password_hash,salt,email) VALUES(?,?,?,?);";
+        PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+        statement.setString(1,account.getLogin());
+        statement.setString(2,account.getPasswordHash());
+        statement.setString(3,account.getSalt());
+        statement.setString(4,account.getEmail());
+        statement.execute();
+        ResultSet rs = statement.getGeneratedKeys();
+        if(rs.next())
+            return rs.getInt(1);
+        else
+            throw new SQLException("Error getting generated key");
     }
 
     @Override
-    public User getUserById(Integer id) {
-        Connection connection = MySqlDBConnection.getConnection();
-        String sql ="SELECT * FROM users WHERE user_id='"+id+"';";
+    public User getById(int id) {
+        String sql ="SELECT * FROM user U JOIN account A ON (U.user_id = A.account_id) WHERE user_id=?;";
         User user = new User();
         user.setId(id);
-        try (connection) {
+        try (Connection connection = MySqlDBConnection.getConnection()) {
             PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setInt(1, id);
             ResultSet rs = statement.executeQuery();
             while (rs.next()){
                 user.setLogin(rs.getString("login"));
@@ -72,6 +64,9 @@ public class UserDAOMySQL implements UserDAO {
                 user.setEmail(rs.getString("email"));
                 user.setFullName(rs.getString("full_name"));
                 user.setCompany(rs.getString("company_name"));
+                user.setPassport(rs.getString("passport"));
+                user.setAddress(rs.getString("address"));
+                user.setGroup(TaxGroup.valueOf(rs.getString("tax_group")));
             }
         } catch (SQLException e) {
             logger.error(e.getMessage());
@@ -81,16 +76,44 @@ public class UserDAOMySQL implements UserDAO {
     }
 
     @Override
-    public void updateUser(User user) {
-        Connection connection = MySqlDBConnection.getConnection();
-        String sql = "UPDATE users SET password_hash=?, email=?, full_name=?, company_name=?, salt=? WHERE login='"+user.getLogin()+"';";
-        try (connection) {
+    public User getByLogin(String login) {
+        String sql ="SELECT * FROM user U JOIN account A ON (U.user_id = A.account_id) WHERE A.login=?;";
+        User user = new User();
+        try (Connection connection = MySqlDBConnection.getConnection()) {
             PreparedStatement statement = connection.prepareStatement(sql);
-            statement.setString(1,user.getPasswordHash());
-            statement.setString(2,user.getEmail());
-            statement.setString(3,user.getFullName());
-            statement.setString(4,user.getCompany());
-            statement.setString(5,user.getSalt());
+            statement.setString(1, login);
+            ResultSet rs = statement.executeQuery();
+            while (rs.next()){
+                user.setId(rs.getInt("user_id"));
+                user.setLogin(rs.getString("login"));
+                user.setPasswordHash(rs.getString("password_hash"));
+                user.setSalt(rs.getString("salt"));
+                user.setEmail(rs.getString("email"));
+                user.setFullName(rs.getString("full_name"));
+                user.setCompany(rs.getString("company_name"));
+                user.setPassport(rs.getString("passport"));
+                user.setAddress(rs.getString("address"));
+                user.setGroup(TaxGroup.valueOf(rs.getString("tax_group")));
+            }
+        } catch (SQLException e) {
+            logger.error(e.getMessage());
+            e.printStackTrace();
+        }
+        return user;
+    }
+
+    @Override
+    public void update(User user) {
+        String sql = "UPDATE user U JOIN account A ON (U.user_id = A.account_id) SET " +
+                "full_name=?, company_name=?, passport=?, address=?, tax_group=? WHERE login=?;";
+        try (Connection connection = MySqlDBConnection.getConnection()) {
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setString(1,user.getFullName());
+            statement.setString(2,user.getCompany());
+            statement.setString(3,user.getPassport());
+            statement.setString(4,user.getAddress());
+            statement.setString(5,user.getGroup().name());
+            statement.setString(6,user.getLogin());
             statement.execute();
         } catch (SQLException e) {
             logger.error(e.getMessage());
@@ -100,10 +123,10 @@ public class UserDAOMySQL implements UserDAO {
 
     @Override
     public boolean isExists(String login) {
-        Connection connection = MySqlDBConnection.getConnection();
-        String sql ="SELECT * FROM users WHERE login='"+login+"';";
-        try (connection) {
+        String sql ="SELECT * FROM user U JOIN account Ac ON (U.user_id = Ac.account_id) WHERE login=?;";
+        try (Connection connection = MySqlDBConnection.getConnection()) {
             PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setString(1, login);
             ResultSet rs = statement.executeQuery();
             if (rs.next()){
                 connection.close();

@@ -1,10 +1,11 @@
 package com.javacourse.dao;
 
+import com.javacourse.model.entities.Account;
 import com.javacourse.model.entities.Admin;
 
-public interface AdminDAO {
+public interface AdminDAO{
 
-    Admin getAdminByLogin(String login);
+    Admin getByLogin(String login);
 
     boolean isExists(String login);
 

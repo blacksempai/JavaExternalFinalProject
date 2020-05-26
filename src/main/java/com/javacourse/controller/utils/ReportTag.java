@@ -1,18 +1,15 @@
-package com.javacourse.model;
+package com.javacourse.controller.utils;
 
-public enum TaxReportTag {
+public enum ReportTag {
     TYPE("0104zvitna"),
     PERIOD("zvitn_period"),
     YEAR("zvitnrik"),
     SPECIFIED_PERIOD("zvitn_period_utochn"),
     SPECIFIED_YEAR("zvitnrik_utochn"),
     AUTHORITY_NAME("nazva_dpi"),
-    USER_FULL_NAME("nazva_platnika"),
-    USER_ADDRESS("podatkova_adresa"),
-    USER_PASSPORT("ipn"),
     EMPLOYEES_AMOUNT("chiselnist"),
-    BUSINESS_ACTIVITY_CODE("kodkved1"),
-    BUSINESS_ACTIVITY("nazvakved1"),
+    BUSINESS_ACTIVITY_CODE("kodkved"),
+    BUSINESS_ACTIVITY("nazvakved"),
     FIRST_GROUP_ADVANCED_PAYMENT_I("gr1_kv1"),
     FIRST_GROUP_ADVANCED_PAYMENT_II("gr1_kv2"),
     FIRST_GROUP_ADVANCED_PAYMENT_III("gr1_kv3"),
@@ -33,9 +30,9 @@ public enum TaxReportTag {
     FINE_PERCENT("rd19dod"),
     PENNY_SUM("rd20");
 
-    String tag;
+    private String tag;
 
-    TaxReportTag(String tag) {
+    ReportTag(String tag) {
         this.tag = tag;
     }
 

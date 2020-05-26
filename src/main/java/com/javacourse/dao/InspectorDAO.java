@@ -1,20 +1,21 @@
 package com.javacourse.dao;
 
+import com.javacourse.model.entities.Account;
 import com.javacourse.model.entities.Inspector;
 
 import java.util.List;
 
-public interface InspectorDAO {
+public interface InspectorDAO{
 
-    void addNewInspector(Inspector inspector);
+    void create(Inspector inspector);
 
     List<Inspector> getAllInspectors();
 
-    Inspector getInspectorByLogin(String login);
+    Inspector getById(int id);
 
-    Inspector getInspectorById(Integer id);
+    Inspector getByLogin(String login);
 
-    void updateInspector(Inspector inspector);
+    void update(Inspector inspector);
 
     boolean isExists(String login);
 
