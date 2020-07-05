@@ -3,6 +3,7 @@ package com.javacourse.model.entities;
 import java.sql.Timestamp;
 import java.util.*;
 
+@Deprecated
 public class TaxReport {
     private Integer id;
     private User user;

@@ -41,7 +41,6 @@ public class ReportEditControllerPOST implements ControllerCommand {
             logger.error("Error editing report",e);
             request.setAttribute("message", Messages.getProperty("msg.form-error", request));
             request.setAttribute("report", oldReport);
-            request.setAttribute("summary", TaxReportSummaryCalculator.calculateSummary(oldReport,factory));
             return new Page(PagePath.getProperty("page.report-edit")+"?id="+request.getParameter("id"),Page.DispatchType.FORWARD);
         }
         return new Page(PagePath.getProperty("page.home"),Page.DispatchType.REDIRECT);

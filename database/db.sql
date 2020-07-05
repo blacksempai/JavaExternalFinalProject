@@ -11,19 +11,19 @@ SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,N
 -- Schema mydb
 -- -----------------------------------------------------
 -- -----------------------------------------------------
--- Schema taxes
+-- Schema taxes_servlets
 -- -----------------------------------------------------
 
 -- -----------------------------------------------------
--- Schema taxes
+-- Schema taxes_servlets
 -- -----------------------------------------------------
-CREATE SCHEMA IF NOT EXISTS `taxes` DEFAULT CHARACTER SET utf8 ;
-USE `taxes` ;
+CREATE SCHEMA IF NOT EXISTS `taxes_servlets` DEFAULT CHARACTER SET utf8 ;
+USE `taxes_servlets` ;
 
 -- -----------------------------------------------------
--- Table `taxes`.`account`
+-- Table `taxes_servlets`.`account`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `taxes`.`account` (
+CREATE TABLE IF NOT EXISTS `taxes_servlets`.`account` (
   `account_id` INT NOT NULL AUTO_INCREMENT,
   `login` VARCHAR(20) NOT NULL,
   `password_hash` VARCHAR(25) NOT NULL,
@@ -38,15 +38,15 @@ DEFAULT CHARACTER SET = utf8;
 
 
 -- -----------------------------------------------------
--- Table `taxes`.`admin`
+-- Table `taxes_servlets`.`admin`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `taxes`.`admin` (
+CREATE TABLE IF NOT EXISTS `taxes_servlets`.`admin` (
   `admin_id` INT NOT NULL AUTO_INCREMENT,
   PRIMARY KEY (`admin_id`),
   UNIQUE INDEX `admin_id_UNIQUE` (`admin_id` ASC) VISIBLE,
   CONSTRAINT `admin_account`
     FOREIGN KEY (`admin_id`)
-    REFERENCES `taxes`.`account` (`account_id`)
+    REFERENCES `taxes_servlets`.`account` (`account_id`)
     ON DELETE CASCADE
     ON UPDATE RESTRICT)
 ENGINE = InnoDB
@@ -55,9 +55,9 @@ DEFAULT CHARACTER SET = utf8;
 
 
 -- -----------------------------------------------------
--- Table `taxes`.`inspector`
+-- Table `taxes_servlets`.`inspector`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `taxes`.`inspector` (
+CREATE TABLE IF NOT EXISTS `taxes_servlets`.`inspector` (
   `inspector_id` INT NOT NULL AUTO_INCREMENT,
   `full_name` VARCHAR(256) NOT NULL,
   `complaint_number` INT NULL DEFAULT '0',
@@ -66,7 +66,7 @@ CREATE TABLE IF NOT EXISTS `taxes`.`inspector` (
   UNIQUE INDEX `inspector_id_UNIQUE` (`inspector_id` ASC) VISIBLE,
   CONSTRAINT `inspector_account`
     FOREIGN KEY (`inspector_id`)
-    REFERENCES `taxes`.`account` (`account_id`)
+    REFERENCES `taxes_servlets`.`account` (`account_id`)
     ON DELETE CASCADE)
 ENGINE = InnoDB
 AUTO_INCREMENT = 106
@@ -74,9 +74,9 @@ DEFAULT CHARACTER SET = utf8;
 
 
 -- -----------------------------------------------------
--- Table `taxes`.`user`
+-- Table `taxes_servlets`.`user`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `taxes`.`user` (
+CREATE TABLE IF NOT EXISTS `taxes_servlets`.`user` (
   `user_id` INT NOT NULL AUTO_INCREMENT,
   `full_name` VARCHAR(255) NOT NULL,
   `company_name` VARCHAR(255) NOT NULL,
@@ -87,7 +87,7 @@ CREATE TABLE IF NOT EXISTS `taxes`.`user` (
   UNIQUE INDEX `user_id_UNIQUE` (`user_id` ASC) VISIBLE,
   CONSTRAINT `user_account`
     FOREIGN KEY (`user_id`)
-    REFERENCES `taxes`.`account` (`account_id`)
+    REFERENCES `taxes_servlets`.`account` (`account_id`)
     ON DELETE CASCADE
     ON UPDATE RESTRICT)
 ENGINE = InnoDB
@@ -96,9 +96,9 @@ DEFAULT CHARACTER SET = utf8;
 
 
 -- -----------------------------------------------------
--- Table `taxes`.`report`
+-- Table `taxes_servlets`.`report`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `taxes`.`report` (
+CREATE TABLE IF NOT EXISTS `taxes_servlets`.`report` (
   `report_id` INT NOT NULL AUTO_INCREMENT,
   `user_id` INT NOT NULL,
   `inspector_id` INT NOT NULL,
@@ -111,19 +111,19 @@ CREATE TABLE IF NOT EXISTS `taxes`.`report` (
   INDEX `user_id_idx` (`user_id` ASC) VISIBLE,
   CONSTRAINT `inspector_id`
     FOREIGN KEY (`inspector_id`)
-    REFERENCES `taxes`.`inspector` (`inspector_id`),
+    REFERENCES `taxes_servlets`.`inspector` (`inspector_id`),
   CONSTRAINT `user_id`
     FOREIGN KEY (`user_id`)
-    REFERENCES `taxes`.`user` (`user_id`))
+    REFERENCES `taxes_servlets`.`user` (`user_id`))
 ENGINE = InnoDB
 AUTO_INCREMENT = 22
 DEFAULT CHARACTER SET = utf8;
 
 
 -- -----------------------------------------------------
--- Table `taxes`.`report_body`
+-- Table `taxes_servlets`.`report_body`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `taxes`.`report_body` (
+CREATE TABLE IF NOT EXISTS `taxes_servlets`.`report_body` (
   `report_body_id` INT NOT NULL AUTO_INCREMENT,
   `report_id` INT NOT NULL,
   PRIMARY KEY (`report_body_id`),
@@ -131,7 +131,7 @@ CREATE TABLE IF NOT EXISTS `taxes`.`report_body` (
   UNIQUE INDEX `report_id_UNIQUE` (`report_id` ASC) VISIBLE,
   CONSTRAINT `report_id`
     FOREIGN KEY (`report_id`)
-    REFERENCES `taxes`.`report` (`report_id`)
+    REFERENCES `taxes_servlets`.`report` (`report_id`)
     ON DELETE CASCADE)
 ENGINE = InnoDB
 AUTO_INCREMENT = 22
@@ -139,16 +139,16 @@ DEFAULT CHARACTER SET = utf8;
 
 
 -- -----------------------------------------------------
--- Table `taxes`.`report_general`
+-- Table `taxes_servlets`.`report_general`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `taxes`.`report_general` (
+CREATE TABLE IF NOT EXISTS `taxes_servlets`.`report_general` (
   `report_general_id` INT NOT NULL AUTO_INCREMENT,
   `employees_number` INT NOT NULL,
   PRIMARY KEY (`report_general_id`),
   UNIQUE INDEX `report_general_id_UNIQUE` (`report_general_id` ASC) VISIBLE,
   CONSTRAINT `report_general_body`
     FOREIGN KEY (`report_general_id`)
-    REFERENCES `taxes`.`report_body` (`report_body_id`)
+    REFERENCES `taxes_servlets`.`report_body` (`report_body_id`)
     ON DELETE CASCADE)
 ENGINE = InnoDB
 AUTO_INCREMENT = 22
@@ -156,9 +156,9 @@ DEFAULT CHARACTER SET = utf8;
 
 
 -- -----------------------------------------------------
--- Table `taxes`.`business_activity`
+-- Table `taxes_servlets`.`business_activity`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `taxes`.`business_activity` (
+CREATE TABLE IF NOT EXISTS `taxes_servlets`.`business_activity` (
   `business_activity_id` INT NOT NULL AUTO_INCREMENT,
   `report_general_id` INT NOT NULL,
   `code` VARCHAR(45) NOT NULL,
@@ -168,7 +168,7 @@ CREATE TABLE IF NOT EXISTS `taxes`.`business_activity` (
   INDEX `report_general_id_idx` (`report_general_id` ASC) VISIBLE,
   CONSTRAINT `id`
     FOREIGN KEY (`report_general_id`)
-    REFERENCES `taxes`.`report_general` (`report_general_id`)
+    REFERENCES `taxes_servlets`.`report_general` (`report_general_id`)
     ON DELETE CASCADE)
 ENGINE = InnoDB
 AUTO_INCREMENT = 18
@@ -176,9 +176,9 @@ DEFAULT CHARACTER SET = utf8;
 
 
 -- -----------------------------------------------------
--- Table `taxes`.`first_group`
+-- Table `taxes_servlets`.`first_group`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `taxes`.`first_group` (
+CREATE TABLE IF NOT EXISTS `taxes_servlets`.`first_group` (
   `first_group_id` INT NOT NULL AUTO_INCREMENT,
   `first_quarter` DOUBLE NOT NULL,
   `second_quarter` DOUBLE NOT NULL,
@@ -190,7 +190,7 @@ CREATE TABLE IF NOT EXISTS `taxes`.`first_group` (
   UNIQUE INDEX `first_group_id_UNIQUE` (`first_group_id` ASC) VISIBLE,
   CONSTRAINT `first_group_id`
     FOREIGN KEY (`first_group_id`)
-    REFERENCES `taxes`.`report_body` (`report_body_id`)
+    REFERENCES `taxes_servlets`.`report_body` (`report_body_id`)
     ON DELETE CASCADE
     ON UPDATE RESTRICT)
 ENGINE = InnoDB
@@ -199,9 +199,9 @@ DEFAULT CHARACTER SET = utf8;
 
 
 -- -----------------------------------------------------
--- Table `taxes`.`report_errors`
+-- Table `taxes_servlets`.`report_errors`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `taxes`.`report_errors` (
+CREATE TABLE IF NOT EXISTS `taxes_servlets`.`report_errors` (
   `report_errors_id` INT NOT NULL AUTO_INCREMENT,
   `single_tax` DOUBLE NOT NULL,
   `spec_tax` DOUBLE NOT NULL,
@@ -211,7 +211,7 @@ CREATE TABLE IF NOT EXISTS `taxes`.`report_errors` (
   UNIQUE INDEX `report_errors_id_UNIQUE` (`report_errors_id` ASC) VISIBLE,
   CONSTRAINT `report_errors_body`
     FOREIGN KEY (`report_errors_id`)
-    REFERENCES `taxes`.`report_body` (`report_body_id`)
+    REFERENCES `taxes_servlets`.`report_body` (`report_body_id`)
     ON DELETE CASCADE
     ON UPDATE RESTRICT)
 ENGINE = InnoDB
@@ -220,9 +220,9 @@ DEFAULT CHARACTER SET = utf8;
 
 
 -- -----------------------------------------------------
--- Table `taxes`.`report_info`
+-- Table `taxes_servlets`.`report_info`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `taxes`.`report_info` (
+CREATE TABLE IF NOT EXISTS `taxes_servlets`.`report_info` (
   `report_info_id` INT NOT NULL AUTO_INCREMENT,
   `type` ENUM('SIMPLE', 'SIMPLE_NEW', 'SPECIFYING', 'REFERENCING') CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_0900_ai_ci' NOT NULL,
   `period` ENUM('I_QUARTER', 'II_QUARTER', 'III_QUARTER', 'IV_QUARTER') CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_0900_ai_ci' NOT NULL,
@@ -234,7 +234,7 @@ CREATE TABLE IF NOT EXISTS `taxes`.`report_info` (
   UNIQUE INDEX `report_info_id_UNIQUE` (`report_info_id` ASC) VISIBLE,
   CONSTRAINT `report_info_body`
     FOREIGN KEY (`report_info_id`)
-    REFERENCES `taxes`.`report_body` (`report_body_id`)
+    REFERENCES `taxes_servlets`.`report_body` (`report_body_id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE)
 ENGINE = InnoDB
@@ -243,9 +243,9 @@ DEFAULT CHARACTER SET = utf8;
 
 
 -- -----------------------------------------------------
--- Table `taxes`.`second_group`
+-- Table `taxes_servlets`.`second_group`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `taxes`.`second_group` (
+CREATE TABLE IF NOT EXISTS `taxes_servlets`.`second_group` (
   `second_group_id` INT NOT NULL AUTO_INCREMENT,
   `first_quarter` DOUBLE NOT NULL,
   `second_quarter` DOUBLE NOT NULL,
@@ -257,7 +257,7 @@ CREATE TABLE IF NOT EXISTS `taxes`.`second_group` (
   UNIQUE INDEX `second_group_id_UNIQUE` (`second_group_id` ASC) VISIBLE,
   CONSTRAINT `second_group_body`
     FOREIGN KEY (`second_group_id`)
-    REFERENCES `taxes`.`report_body` (`report_body_id`)
+    REFERENCES `taxes_servlets`.`report_body` (`report_body_id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE)
 ENGINE = InnoDB
@@ -266,9 +266,9 @@ DEFAULT CHARACTER SET = utf8;
 
 
 -- -----------------------------------------------------
--- Table `taxes`.`third_group`
+-- Table `taxes_servlets`.`third_group`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `taxes`.`third_group` (
+CREATE TABLE IF NOT EXISTS `taxes_servlets`.`third_group` (
   `third_group_id` INT NOT NULL AUTO_INCREMENT,
   `3_percent` DOUBLE NOT NULL,
   `5_percent` DOUBLE NOT NULL,
@@ -277,13 +277,33 @@ CREATE TABLE IF NOT EXISTS `taxes`.`third_group` (
   UNIQUE INDEX `third_group_id_UNIQUE` (`third_group_id` ASC) VISIBLE,
   CONSTRAINT `third_group_id`
     FOREIGN KEY (`third_group_id`)
-    REFERENCES `taxes`.`report_body` (`report_body_id`)
+    REFERENCES `taxes_servlets`.`report_body` (`report_body_id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE)
 ENGINE = InnoDB
 AUTO_INCREMENT = 22
 DEFAULT CHARACTER SET = utf8;
 
+USE `taxes_servlets` ;
+INSERT account(account_id,login,password_hash,salt,email)
+VALUES (1,'root','R9eVAMK6l3WAQIlD2iO1TQ==','Ab+X/QLUJu1CfntJIxcchA==','root@gmail.com'),
+(2,'neo','R9eVAMK6l3WAQIlD2iO1TQ==','Ab+X/QLUJu1CfntJIxcchA==','Matrix1998@gmail.com'),
+(3,'inspector01','ZApkkRTGhjmcoVGrLL3LNw==','MjCDUaT38BJOwAZ6e2DIgA==','gadget@gmail.com'),
+(4,'hanako','YFDTHVOF8yQDtR9jnj6E+w==','pEu3W1AkaMEqjnMDlH6mbw==','hanako.subaru@gmail.com'),
+(5,'inspector02','NWo8+YezVl4N1tLnBMvUPQ==','Q6lpAvM+uqQEMP47Jf8XPg==','pink.panter200@mail.ru'),
+(6,'inspector03','JToNIEPy4hBpah4FX61l2w==','8ggMFPHNzRsz7D0i24dwDg==','johney.english@gmail.com');
+
+INSERT admin(admin_id) 
+VALUES (1);
+
+INSERT user(user_id,full_name,company_name,passport,address,tax_group) 
+VALUES (2,'Томас Андерсон','Навуходоносор','КП454054','75 PARK PLACE 8TH FLOOR NEW YORK NY 10007 United States','FIRST'),
+(4,'花子　スバル','花火大会','ИИ324566','東京都港区赤坂２丁目１７−２２','FIRST');
+
+INSERT inspector(inspector_id,full_name,complaint_number,reports_in_service) 
+VALUES (3,'Інспектор Гаджет',0,0),
+(5,'Жак Клузо',0,0),
+(6,'Джонні Інгліш',0,0);
 
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;

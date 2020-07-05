@@ -127,4 +127,5 @@ public class TaxReportSummaryCalculator {
         return amountIncrease/100*percent;
     }
 
+
 }
