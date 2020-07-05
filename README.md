@@ -14,6 +14,6 @@ git clone https://github.com/blacksempai/JavaExternalFinalProject.git
 
 2)Build and deploy the project with maven:
 ```
-mvn tomcat7:deploy
+mvn tomcat7:run
 ```
 3)Go to url localhost:8888/
